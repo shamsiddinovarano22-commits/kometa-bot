@@ -31,8 +31,8 @@ def start(message):
         "Buyurtma berish uchun quyidagi tugmani bosing 👇"
     )
 
-# Admin xabar yoki rasm yuborganda — hammaga ketadi
-@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID, 
+# Admin yuborganda — bot nomidan hammaga ketadi
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID,
                      content_types=['text', 'photo', 'video'])
 def broadcast(message):
     users = load_users()
@@ -41,18 +41,18 @@ def broadcast(message):
         if user_id == ADMIN_ID:
             continue
         try:
-            bot.forward_message(user_id, ADMIN_ID, message.message_id)
+            bot.copy_message(user_id, ADMIN_ID, message.message_id)
             ok += 1
         except:
             fail += 1
     bot.send_message(ADMIN_ID, f"✅ Yuborildi: {ok} ta\n❌ Xato: {fail} ta")
 
-# Foydalanuvchi xabar yozsa — adminga yuboradi
+# Foydalanuvchi yozsa — adminga ketadi
 @bot.message_handler(func=lambda m: m.chat.id != ADMIN_ID,
                      content_types=['text', 'photo', 'video'])
 def forward_to_admin(message):
     save_user(message.chat.id)
-    bot.forward_message(ADMIN_ID, message.chat.id, message.message_id)
+    bot.copy_message(ADMIN_ID, message.chat.id, message.message_id)
     bot.send_message(message.chat.id, "✅ Xabaringiz qabul qilindi!")
 
 bot.polling(none_stop=True)
